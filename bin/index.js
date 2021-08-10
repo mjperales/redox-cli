@@ -238,7 +238,7 @@ if (options.total) {
     getStarted(options.total);
 }
 if (options.name) {
-    console.log('...writing to file...');
+    // console.log('...writing to file...');
     async function saveFile() {
         const pullRequests = await fetchOrgPullRequests(options.name);
         // we won't create a file everytime... but we can
@@ -254,7 +254,7 @@ if (options.name) {
         //         }
         //     }
         // );
-        // console.log(pullRequests);
+        console.log(pullRequests);
         return pullRequests;
     }
     saveFile();
