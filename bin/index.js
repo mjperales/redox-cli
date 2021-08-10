@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 require('dotenv').config();
+const fs = require('fs');
 const boxen = require('boxen');
 const { request } = require('@octokit/request');
 const token = process.env.TOKEN;
@@ -15,7 +16,7 @@ const boxenOptions = {
 
 const options = yargs
     .usage('Usage: -t <total>')
-    .options('n', {
+    .options('t', {
         alias: 'total',
         describe: 'Find Total Repos',
         type: 'string',
@@ -25,18 +26,8 @@ const options = yargs
         alias: 'name',
         describe: 'Org Name',
         type: 'string',
-        demandOption: false,
+        demandOption: true,
     }).argv;
-
-/**
- * Grab a list of repo names for one org
- *
- * @param {Array} list repo names for one org
- * @returns
- */
-const fetchListOfRepoNames = (list) => ({
-    repos: list,
-});
 
 /**
  * Let's get started by finding all the repo names of an organization,
@@ -47,29 +38,14 @@ const fetchListOfRepoNames = (list) => ({
  */
 async function getStarted(orgName) {
     try {
-        const rsp = await request('GET /orgs/{org}/repos', {
-            headers: {
-                authorization: `token ${token}`,
-            },
-            org: `${orgName.toLowerCase()}`,
-        });
-
-        const { data } = rsp;
-        let names = [];
-
-        // find repo names
-        data.forEach((item) => {
-            names.push(item.name);
-        });
-        const list = fetchListOfRepoNames(names);
-        const { repos } = list;
+        const list = await fetchRepoNames(orgName);
         const arr = [];
 
         // We loop through our repos
         // Can't use forEach because it doesn't wait for promises
-        for (let i = 0; repos.length > i; i++) {
-            const total = await getTotalPulls(repos[i]);
-            arr.push({ repo: repos[i], pulls: total });
+        for (let i = 0; list.length > i; i++) {
+            const total = await getTotalPulls(list[i]);
+            arr.push({ repo: list[i], pulls: total });
         }
 
         const total = await findTotal(arr);
@@ -117,7 +93,7 @@ async function getTotalPulls(repo) {
 
         const { link } = rsp.headers;
 
-        // if link doens't exist then we only have 1 page!
+        // if link doesn't exist then we only have 1 page!
         if (link === undefined) {
             const onlyOnePagePulls = await getLastPagePulls(1, repo);
             return onlyOnePagePulls;
@@ -166,8 +142,122 @@ async function getLastPagePulls(pageNum, repo) {
     }
 }
 
+/**
+ * Fetch an array of repository names for an organization
+ *
+ * @param {String} orgName Org name
+ * @returns
+ */
+async function fetchRepoNames(orgName) {
+    try {
+        const rsp = await request('GET /orgs/{org}/repos', {
+            headers: {
+                authorization: `token ${token}`,
+            },
+            org: `${orgName.toLowerCase()}`,
+        });
+
+        const { data } = rsp;
+        const names = [];
+
+        // find repo names
+        for (let i = 0; data.length > i; ++i) {
+            names.push(data[i].name);
+        }
+
+        // console.log(names);
+        return names;
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+/**
+ * Fetch an array of PRs for an organization
+ *
+ * @param {String} orgName  Github organization name
+ * @returns
+ */
+async function fetchOrgPullRequests(orgName) {
+    try {
+        const list = await fetchRepoNames(orgName);
+        let prs = [];
+
+        // iterate through repo names and push to array
+        // the only bad part is that we need to iterate through pages too 🤢
+        for (let i = 0; list.length > i; i++) {
+            const rsp = await request(
+                `GET /repos/{owner}/{repo}/pulls?per_page=100`,
+                {
+                    headers: {
+                        authorization: `token ${token}`,
+                    },
+                    owner: orgName,
+                    repo: `${list[i]}`,
+                }
+            );
+
+            const { data, headers } = rsp;
+
+            // if we don't have a link property then we only have one page!
+            // So, we can skip those since we will get an undefined error
+            if (headers.link) {
+                const extractPageString = /&page\={0,9}\w+/g.exec(headers.link);
+                const lastPage = /\d+[0-9]*/.exec(extractPageString[0]);
+                const totalPages = parseInt(lastPage, 10);
+
+                // this is where it gets yucky
+                // greater than 1 since we already have the results for the first page
+                for (let x = totalPages; x > 1; x--) {
+                    const rsp = await request(
+                        `GET /repos/{owner}/{repo}/pulls?per_page=100&page=${x}`,
+                        {
+                            headers: {
+                                authorization: `token ${token}`,
+                            },
+                            owner: orgName,
+                            repo: `${list[i]}`,
+                        }
+                    );
+                    const { data } = rsp;
+                    prs = prs.concat(data);
+                }
+            }
+
+            prs = prs.concat(data);
+        }
+        // console.log(prs.length);
+        return prs;
+    } catch (err) {
+        console.log(err);
+    }
+}
+
 if (options.total && options.name) {
     console.log(`Total pulls for ${options.name}:`);
     console.log(`...wait while we calculate...`);
     getStarted(options.name);
+} else if (options.name) {
+    console.log('...writing to file...');
+    async function saveFile() {
+        const pullRequests = await fetchOrgPullRequests(options.name);
+
+        // we won't create a file everytime... but we can
+        // const milliseconds = new Date().now;
+        // fs.writeFile(
+        //     `./pull-requests-${milliseconds}.js`,
+        //     JSON.stringify(pullRequests),
+        //     { flag: 'a+' },
+        //     (err) => {
+        //         if (err) {
+        //             console.log(err);
+        //             return;
+        //         }
+        //     }
+        // );
+
+        console.log(pullRequests);
+        return pullRequests;
+    }
+    saveFile();
 }
