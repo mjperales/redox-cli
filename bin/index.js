@@ -15,7 +15,7 @@ const boxenOptions = {
 };
 
 const options = yargs
-    .usage('Usage: -t <total>')
+    .usage('Usage: -n <orgName>')
     .options('n', {
         alias: 'name',
         describe: 'Fetch all PRs for an organization',
