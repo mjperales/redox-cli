@@ -75,7 +75,7 @@ async function findTotal(arr) {
 }
 
 /**
- * Finds the total pulls for a repository
+ * Finds the total pulls for a an organization
  *
  * @param {String} repo repo name
  * @returns
