@@ -16,18 +16,17 @@ const boxenOptions = {
 
 const options = yargs
     .usage('Usage: -t <total>')
-    .options('t', {
-        alias: 'total',
-        describe: 'Find Total Repos',
-        type: 'string',
-        demandOption: false,
-    })
     .options('n', {
         alias: 'name',
-        describe: 'Org Name',
+        describe: 'Fetch all PRs for an organization',
         type: 'string',
-        demandOption: true,
-    }).argv;
+    })
+    .options('t', {
+        alias: 'total',
+        describe: 'Find Total PRs for organization',
+        type: 'string',
+    })
+    .help().argv;
 
 /**
  * Let's get started by finding all the repo names of an organization,
@@ -233,15 +232,15 @@ async function fetchOrgPullRequests(orgName) {
     }
 }
 
-if (options.total && options.name) {
-    console.log(`Total pulls for ${options.name}:`);
+if (options.total) {
+    console.log(`Total pulls for ${options.total}:`);
     console.log(`...wait while we calculate...`);
-    getStarted(options.name);
-} else if (options.name) {
+    getStarted(options.total);
+}
+if (options.name) {
     console.log('...writing to file...');
     async function saveFile() {
         const pullRequests = await fetchOrgPullRequests(options.name);
-
         // we won't create a file everytime... but we can
         // const milliseconds = new Date().now;
         // fs.writeFile(
@@ -255,8 +254,7 @@ if (options.total && options.name) {
         //         }
         //     }
         // );
-
-        console.log(pullRequests);
+        // console.log(pullRequests);
         return pullRequests;
     }
     saveFile();
