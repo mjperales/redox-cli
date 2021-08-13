@@ -5,13 +5,11 @@
  * @returns
  */
 function findTotal(arr) {
-    try {
-        const total = arr.reduce((acc, current) => acc + current.pulls, 0);
-
-        return total;
-    } catch (err) {
-        console.log(err);
+    if (!Array.isArray(arr)) {
+        throw new Error('Make sure to use a valid array.');
     }
+
+    return arr.reduce((acc, current) => acc + current.pulls, 0);
 }
 
 // exports
