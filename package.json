@@ -18,5 +18,8 @@
     "chalk": "2.4",
     "dotenv": "^10.0.0",
     "yargs": "13.2"
+  },
+  "devDependencies": {
+    "mocha": "^9.0.3"
   }
 }
