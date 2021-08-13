@@ -4,7 +4,7 @@
   "description": "",
   "main": "bin/index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --watch"
   },
   "author": "Mayra Perales",
   "license": "ISC",
@@ -20,6 +20,7 @@
     "yargs": "13.2"
   },
   "devDependencies": {
+    "chai": "^4.3.4",
     "mocha": "^9.0.3"
   }
 }
