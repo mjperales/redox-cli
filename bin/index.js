@@ -5,6 +5,7 @@ const boxen = require('boxen');
 const { request } = require('@octokit/request');
 const token = process.env.TOKEN;
 const yargs = require('yargs');
+const findTotal = require('./findTotal');
 
 const boxenOptions = {
     padding: 1,
@@ -54,22 +55,6 @@ async function getStarted(orgName) {
         return total;
     } catch (err) {
         console.log('Make sure to use a valid organization name');
-        console.log(err);
-    }
-}
-
-/**
- * Finds the total of all pulls for an organizations
- *
- * @param {Array} arr Array of object with repos and total pulls
- * @returns
- */
-async function findTotal(arr) {
-    try {
-        const total = arr.reduce((acc, current) => acc + current.pulls, 0);
-
-        return total;
-    } catch (err) {
         console.log(err);
     }
 }
