@@ -28,7 +28,12 @@ async function fetchRepoNames(orgName) {
         // console.log(names);
         return names;
     } catch (err) {
+        if (err.status === 404) {
+            return err.message;
+        }
+
         console.log(err);
+        return err;
     }
 }
 
