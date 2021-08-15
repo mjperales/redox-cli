@@ -6,6 +6,8 @@ const { request } = require('@octokit/request');
 const token = process.env.TOKEN;
 const yargs = require('yargs');
 const findTotal = require('./findTotal');
+const fetchRepoNames = require('./fetchRepoNames');
+const getLastPagePulls = require('./getLastPagePulls');
 
 const boxenOptions = {
     padding: 1,
@@ -44,7 +46,7 @@ async function getStarted(orgName) {
         // We loop through our repos
         // Can't use forEach because it doesn't wait for promises
         for (let i = 0; list.length > i; i++) {
-            const total = await getTotalPulls(list[i]);
+            const total = await getTotalPulls(list[i], orgName);
             arr.push({ repo: list[i], pulls: total });
         }
 
@@ -63,23 +65,24 @@ async function getStarted(orgName) {
  * Finds the total pulls for a an organization
  *
  * @param {String} repo repo name
+ * @param {String} orgName Orgnanization name
  * @returns
  */
-async function getTotalPulls(repo) {
+async function getTotalPulls(repo, orgName) {
     try {
         const rsp = await request('GET /repos/{owner}/{repo}/pulls', {
             headers: {
                 authorization: `token ${token}`,
             },
-            owner: 'ramda',
-            repo: `${repo}`,
+            owner: orgName,
+            repo: repo,
         });
 
         const { link } = rsp.headers;
 
         // if link doesn't exist then we only have 1 page!
         if (link === undefined) {
-            const onlyOnePagePulls = await getLastPagePulls(1, repo);
+            const onlyOnePagePulls = await getLastPagePulls(1, repo, orgName);
             return onlyOnePagePulls;
         }
 
@@ -93,66 +96,15 @@ async function getTotalPulls(repo) {
         const lastPageNum = parseInt(lastPage, 10);
 
         const pullsFromPrevPages = (lastPageNum - 1) * 30;
-        const pullsFromLastPage = await getLastPagePulls(lastPageNum, repo);
+        const pullsFromLastPage = await getLastPagePulls(
+            lastPageNum,
+            repo,
+            orgName
+        );
 
         return pullsFromPrevPages + pullsFromLastPage;
     } catch (err) {
         return console.log(err);
-    }
-}
-
-/**
- * Let's find the amount of pulls for the last page
- *
- * @param {Num} pageNum Last page number
- * @param {String} repo repository name
- * @returns
- */
-async function getLastPagePulls(pageNum, repo) {
-    try {
-        const rsp = await request(
-            `GET /repos/{owner}/{repo}/pulls?page=${pageNum}`,
-            {
-                headers: {
-                    authorization: `token ${token}`,
-                },
-                owner: 'ramda',
-                repo: `${repo}`,
-            }
-        );
-        return rsp.data.length;
-    } catch (err) {
-        return console.log(err);
-    }
-}
-
-/**
- * Fetch an array of repository names for an organization
- *
- * @param {String} orgName Org name
- * @returns
- */
-async function fetchRepoNames(orgName) {
-    try {
-        const rsp = await request('GET /orgs/{org}/repos', {
-            headers: {
-                authorization: `token ${token}`,
-            },
-            org: `${orgName.toLowerCase()}`,
-        });
-
-        const { data } = rsp;
-        const names = [];
-
-        // find repo names
-        for (let i = 0; data.length > i; ++i) {
-            names.push(data[i].name);
-        }
-
-        // console.log(names);
-        return names;
-    } catch (err) {
-        console.log(err);
     }
 }
 
