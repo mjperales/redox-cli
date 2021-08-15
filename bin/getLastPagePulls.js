@@ -28,7 +28,9 @@ async function getLastPagePulls(pageNum, repo, owner) {
         if (err.status === 404) {
             return err.message;
         }
-        return console.log(err);
+
+        console.log(err);
+        return err;
     }
 }
 

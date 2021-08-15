@@ -7,4 +7,9 @@ describe('fetchRepoNames() tests', async () => {
         const names = await fetchRepoNames('ramda');
         expect(names).to.be.a('array');
     });
+
+    it('returns page not found with bad org name', async () => {
+        const rsp = await fetchRepoNames('mayra');
+        expect(rsp).equal('Not Found');
+    });
 });
