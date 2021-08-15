@@ -89,7 +89,7 @@ async function getTotalPulls(repo, orgName) {
         // So, we know that the default page count is 30 pulls per page
         // We just need to figure out how many pages the results has and
         // since the pages before will have a 30 count, then we only need
-        // to figure out how many pulls the last page has and then add
+        // to figure out how many pulls the last page has and then add to it
         const addIntoArray = link.split(',');
         const extractPageString = /page\={0,9}\w+/g.exec(addIntoArray[1]);
         const lastPage = /\d+[0-9]*/.exec(extractPageString[0]);
@@ -104,6 +104,10 @@ async function getTotalPulls(repo, orgName) {
 
         return pullsFromPrevPages + pullsFromLastPage;
     } catch (err) {
+        if (err.status === 404) {
+            return err.message;
+        }
+
         return console.log(err);
     }
 }
