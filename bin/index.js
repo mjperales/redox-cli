@@ -7,7 +7,7 @@ const token = process.env.TOKEN;
 const yargs = require('yargs');
 const findTotal = require('./findTotal');
 const fetchRepoNames = require('./fetchRepoNames');
-const getTotalPulls = require('./getTotalPulls');
+const calculateTotalPRs = require('./calculateTotalPRs');
 
 const boxenOptions = {
     padding: 1,
@@ -46,7 +46,7 @@ async function getStarted(orgName) {
         // We loop through our repos
         // Can't use forEach because it doesn't wait for promises
         for (let i = 0; list.length > i; i++) {
-            const total = await getTotalPulls(list[i], orgName);
+            const total = await calculateTotalPRs(list[i], orgName);
             arr.push({ repo: list[i], pulls: total });
         }
 
