@@ -2,6 +2,13 @@ require('dotenv').config();
 const { request } = require('@octokit/request');
 const token = process.env.TOKEN;
 
+/**
+ *
+ * @param {String} orgName Organization name
+ * @param {String} repo Repository name
+ * @param {Number} page Page number to fetch
+ * @returns
+ */
 async function fetchPRsWith100PerPage(orgName, repo, page = null) {
     try {
         let path = 'GET /repos/{owner}/{repo}/pulls?per_page=100';
