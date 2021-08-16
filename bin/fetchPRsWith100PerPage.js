@@ -3,7 +3,7 @@ const { request } = require('@octokit/request');
 const token = process.env.TOKEN;
 
 /**
- *
+ * Fetch PRs with a total page count of 100
  * @param {String} orgName Organization name
  * @param {String} repo Repository name
  * @param {Number} page Page number to fetch
