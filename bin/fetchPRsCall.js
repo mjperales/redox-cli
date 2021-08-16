@@ -2,6 +2,14 @@ require('dotenv').config();
 const { request } = require('@octokit/request');
 const token = process.env.TOKEN;
 
+/**
+ * Fetch call for total PRs
+ * Does not include any attributes like per_page
+ *
+ * @param {String} repo  Repository name
+ * @param {String} orgName Organization name
+ * @returns
+ */
 async function fetchPrsCall(repo, orgName) {
     try {
         const rsp = await request('GET /repos/{owner}/{repo}/pulls', {

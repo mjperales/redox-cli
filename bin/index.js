@@ -8,6 +8,7 @@ const yargs = require('yargs');
 const findTotal = require('./findTotal');
 const fetchRepoNames = require('./fetchRepoNames');
 const calculateTotalPRs = require('./calculateTotalPRs');
+const fetchPRsWith100PerPage = require('./fetchPRsWith100PerPage');
 
 const boxenOptions = {
     padding: 1,
@@ -75,16 +76,7 @@ async function fetchOrgPullRequests(orgName) {
         // iterate through repo names and push to array
         // the only bad part is that we need to iterate through pages too 🤢
         for (let i = 0; list.length > i; i++) {
-            const rsp = await request(
-                `GET /repos/{owner}/{repo}/pulls?per_page=100`,
-                {
-                    headers: {
-                        authorization: `token ${token}`,
-                    },
-                    owner: orgName,
-                    repo: `${list[i]}`,
-                }
-            );
+            const rsp = await fetchPRsWith100PerPage(orgName, list[i]);
 
             const { data, headers } = rsp;
 
@@ -98,15 +90,10 @@ async function fetchOrgPullRequests(orgName) {
                 // this is where it gets yucky
                 // greater than 1 since we already have the results for the first page
                 for (let x = totalPages; x > 1; x--) {
-                    const rsp = await request(
-                        `GET /repos/{owner}/{repo}/pulls?per_page=100&page=${x}`,
-                        {
-                            headers: {
-                                authorization: `token ${token}`,
-                            },
-                            owner: orgName,
-                            repo: `${list[i]}`,
-                        }
+                    const rsp = await fetchPRsWith100PerPage(
+                        orgName,
+                        list[i],
+                        x
                     );
                     const { data } = rsp;
                     prs = prs.concat(data);
