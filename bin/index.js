@@ -2,8 +2,6 @@
 require('dotenv').config();
 const fs = require('fs');
 const boxen = require('boxen');
-const { request } = require('@octokit/request');
-const token = process.env.TOKEN;
 const yargs = require('yargs');
 const findTotal = require('./findTotal');
 const fetchRepoNames = require('./fetchRepoNames');
@@ -115,23 +113,11 @@ if (options.total) {
 }
 if (options.name) {
     // console.log('...writing to file...');
-    async function saveFile() {
+    async function displayResults() {
         const pullRequests = await saveListOfPRs(options.name);
-        // we won't create a file everytime... but we can
-        // const milliseconds = new Date().now;
-        // fs.writeFile(
-        //     `./pull-requests-${milliseconds}.js`,
-        //     JSON.stringify(pullRequests),
-        //     { flag: 'a+' },
-        //     (err) => {
-        //         if (err) {
-        //             console.log(err);
-        //             return;
-        //         }
-        //     }
-        // );
+
         console.log(pullRequests);
         return pullRequests;
     }
-    saveFile();
+    displayResults();
 }
