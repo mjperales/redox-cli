@@ -33,13 +33,12 @@ const options = yargs
     .help().argv;
 
 /**
- * Let's get started by finding all the repo names of an organization,
- * then fetching total pulls for each repo and then combining the results
+ * Calculate to total number of PRs for an organization
  *
  * @param {String} orgName Github org name
  * @returns
  */
-async function getStarted(orgName) {
+async function calculateTotalNumberPRs(orgName) {
     try {
         const list = await fetchRepoNames(orgName);
         const arr = [];
@@ -63,12 +62,12 @@ async function getStarted(orgName) {
 }
 
 /**
- * Fetch an array of PRs for an organization
+ * Fetch an array of objects (PRs for an organization)
  *
  * @param {String} orgName  Github organization name
  * @returns
  */
-async function fetchOrgPullRequests(orgName) {
+async function saveListOfPRs(orgName) {
     try {
         const list = await fetchRepoNames(orgName);
         let prs = [];
@@ -112,12 +111,12 @@ async function fetchOrgPullRequests(orgName) {
 if (options.total) {
     console.log(`Total pulls for ${options.total}:`);
     console.log(`...wait while we calculate...`);
-    getStarted(options.total);
+    calculateTotalNumberPRs(options.total);
 }
 if (options.name) {
     // console.log('...writing to file...');
     async function saveFile() {
-        const pullRequests = await fetchOrgPullRequests(options.name);
+        const pullRequests = await saveListOfPRs(options.name);
         // we won't create a file everytime... but we can
         // const milliseconds = new Date().now;
         // fs.writeFile(
