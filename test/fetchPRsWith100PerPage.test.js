@@ -10,4 +10,8 @@ describe('fetchPRsWith100PerPage() tests', function () {
         const rsp = await fetchPRsWith100PerPage('mayra', 'ramda');
         expect(rsp).equal('Not Found');
     });
+    it('returns object with successful response', async function () {
+        const rsp = await fetchPRsWith100PerPage('ramda', 'ramda-fantasy');
+        expect(rsp).to.be.a('object');
+    });
 });
