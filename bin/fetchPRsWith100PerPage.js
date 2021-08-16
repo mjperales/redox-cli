@@ -14,7 +14,7 @@ async function fetchPRsWith100PerPage(orgName, repo, page = null) {
         let path = 'GET /repos/{owner}/{repo}/pulls?per_page=100';
 
         if (page !== null) {
-            path = `GET /repos/{owner}/{repo}/pulls?per_page=100&page=${x}`;
+            path = `GET /repos/{owner}/{repo}/pulls?per_page=100&page=${page}`;
         }
 
         const rsp = await request(path, {
