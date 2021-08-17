@@ -1,0 +1,39 @@
+{
+    "all": {
+        "success": {
+            "res": {
+                "status": 200,
+                "headers": {
+                    "content-type": "application/json",
+                    "link": "rel:first page=1 info, rel:last page=3"
+                },
+                "data": [
+                    {
+                        "id": 4,
+                        "title": "Issue 1",
+                        "state": "open",
+                        "url": "https://github.com/something"
+                    },
+                    {
+                        "id": 5,
+                        "title": "Another issue found",
+                        "state": "open",
+                        "url": "https://github.com/something"
+                    },
+                    {
+                        "id": 6,
+                        "title": "Issue 837663",
+                        "state": "open",
+                        "url": "https://github.com/something"
+                    }
+                ]
+            }
+        },
+        "error": {
+            "res": {
+                "status": 404,
+                "message": "NOt Found"
+            }
+        }
+    }
+}

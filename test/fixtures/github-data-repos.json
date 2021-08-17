@@ -1,0 +1,32 @@
+{
+    "all": {
+        "success": {
+            "res": {
+                "status": 200,
+                "headers": {
+                    "content-type": "application/json"
+                },
+                "data": [
+                    {
+                        "id": 4,
+                        "name": "glorious-morning"
+                    },
+                    {
+                        "id": 5,
+                        "name": "tcu"
+                    },
+                    {
+                        "id": 6,
+                        "name": "st-francis"
+                    }
+                ]
+            }
+        }
+    },
+    "error": {
+        "res": {
+            "status": 404,
+            "message": "NOt Found"
+        }
+    }
+}
