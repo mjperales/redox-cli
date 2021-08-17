@@ -27,6 +27,7 @@ describe('fetchPRsWith100PerPage() tests', function () {
             .stub()
             .withArgs('ramda', 'ramda-fantasy');
         fetchPRsWith100PerPage.returns(response.all.success.res.data);
-        response.all.success.res.data.length.should.equal(3);
+        const total = fetchPRsWith100PerPage('ramda', 'mayra');
+        total.length.should.equal(3);
     });
 });
