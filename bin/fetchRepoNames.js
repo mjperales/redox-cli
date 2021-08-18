@@ -3,38 +3,24 @@ const { request } = require('@octokit/request');
 const token = process.env.TOKEN;
 
 /**
- * Fetch an array of repository names for an organization
+ * Compile an array of repository names for an organization
  *
- * @param {String} orgName Org name
+ * @param {Array} data Array of objects
  * @returns
  */
-async function fetchRepoNames(orgName) {
-    try {
-        const rsp = await request('GET /orgs/{org}/repos', {
-            headers: {
-                authorization: `token ${token}`,
-            },
-            org: `${orgName.toLowerCase()}`,
-        });
-
-        const { data } = rsp;
-        const names = [];
-
-        // find repo names
-        for (let i = 0; data.length > i; ++i) {
-            names.push(data[i].name);
-        }
-
-        // console.log(names);
-        return names;
-    } catch (err) {
-        if (err.status === 404) {
-            return err.message;
-        }
-
-        console.log(err);
-        return err;
+function fetchRepoNames(data) {
+    if (!Array.isArray(data)) {
+        throw new Error('data should be an array');
     }
+    const names = [];
+
+    // find repo names
+    for (let i = 0; data.length > i; ++i) {
+        names.push(data[i].name);
+    }
+
+    // console.log(names);
+    return names;
 }
 
 module.exports = fetchRepoNames;
