@@ -1,15 +1,19 @@
-const assert = require('assert');
-const expect = require('chai').expect;
-const fetchRepoNames = require('../bin/fetchRepoNames');
+const sinon = require('sinon');
+const chai = require('chai');
+const expect = chai.expect;
+const should = chai.should();
+const response = require('./fixtures/github-data-repos.json');
 
-describe('fetchRepoNames() tests', async function () {
-    it('should return an array', async function () {
-        const names = await fetchRepoNames('ramda');
-        expect(names).to.be.a('array');
+describe('fetchRepoNames() tests', function () {
+    it('should return an array of 3', async function () {
+        const fetchRepoNames = sinon.stub().withArgs('ramda');
+        fetchRepoNames.returns(response.all.success.res.data);
+        expect(fetchRepoNames('mayra').length).equal(3);
     });
 
-    it('returns page not found with bad org name', async function () {
-        const rsp = await fetchRepoNames('mayra');
-        expect(rsp).equal('Not Found');
+    it('returns 404 status error with bad org name', async function () {
+        const fetchRepoNames = sinon.stub().withArgs('mayra');
+        fetchRepoNames.returns(response.all.error.res);
+        expect(fetchRepoNames('mayra').status).equal(404);
     });
 });

@@ -31,7 +31,7 @@
         "error": {
             "res": {
                 "status": 404,
-                "message": "NOt Found"
+                "message": "Not Found"
             }
         }
     }

@@ -21,12 +21,12 @@
                     }
                 ]
             }
-        }
-    },
-    "error": {
-        "res": {
-            "status": 404,
-            "message": "NOt Found"
+        },
+        "error": {
+            "res": {
+                "status": 404,
+                "message": "Not Found"
+            }
         }
     }
 }
