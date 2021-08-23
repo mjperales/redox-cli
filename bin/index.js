@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 require('dotenv').config();
 const fs = require('fs');
-const boxen = require('boxen');
 const yargs = require('yargs');
-const findTotal = require('./findTotal');
-const compileRepoNames = require('./compileRepoNames');
+const boxen = require('boxen');
 const calculateTotalPRs = require('./calculateTotalPRs');
+const compileRepoNames = require('./compileRepoNames');
 const fetchPRsWith100PerPage = require('./fetchPRsWith100PerPage');
+const findTotal = require('./findTotal');
 const fetchRepos = require('./fetchRepos');
 
 const boxenOptions = {
@@ -32,52 +32,20 @@ const options = yargs
     .help().argv;
 
 /**
- * Calculate to total number of PRs for an organization
- *
- * @param {String} orgName Github org name
- * @returns
- */
-async function calculateTotalNumberPRs(orgName) {
-    try {
-        const data = await fetchRepos(orgName);
-        // console.log(data);
-        const list = compileRepoNames(data);
-        const arr = [];
-
-        // We loop through our repos
-        // Can't use forEach because it doesn't wait for promises
-        for (let i = 0; list.length > i; i++) {
-            const total = await calculateTotalPRs(list[i], orgName);
-            arr.push({ repo: list[i], pulls: total });
-        }
-
-        const total = await findTotal(arr);
-        const msgBox = boxen(total.toString(), boxenOptions);
-
-        console.log(msgBox);
-        return total;
-    } catch (err) {
-        console.log('Make sure to use a valid organization name');
-        console.log(err);
-    }
-}
-
-/**
  * Fetch an array of objects (PRs for an organization)
  *
- * @param {String} orgName  Github organization name
+ * @param {Array} repoNames  List of repository names
+ * @param {String} orgName Organization name
  * @returns
  */
-async function saveListOfPRs(orgName) {
+async function saveListOfPRs(repoNames, orgName) {
     try {
-        const data = await fetchRepos(orgName);
-        const list = compileRepoNames(data);
         let prs = [];
 
         // iterate through repo names and push to array
         // the only bad part is that we need to iterate through pages too 🤢
-        for (let i = 0; list.length > i; i++) {
-            const rsp = await fetchPRsWith100PerPage(orgName, list[i]);
+        for (let i = 0; repoNames.length > i; i++) {
+            const rsp = await fetchPRsWith100PerPage(orgName, repoNames[i]);
 
             const { data, headers } = rsp;
 
@@ -93,7 +61,7 @@ async function saveListOfPRs(orgName) {
                 for (let x = totalPages; x > 1; x--) {
                     const rsp = await fetchPRsWith100PerPage(
                         orgName,
-                        list[i],
+                        repoNames[i],
                         x
                     );
                     const { data } = rsp;
@@ -113,15 +81,35 @@ async function saveListOfPRs(orgName) {
 if (options.total) {
     console.log(`Total pulls for ${options.total}:`);
     console.log(`...wait while we calculate...`);
-    calculateTotalNumberPRs(options.total);
+
+    async function run() {
+        const data = await fetchRepos(options.total);
+        const list = compileRepoNames(data);
+        const arr = [];
+
+        // We loop through our repos
+        // Can't use forEach because it doesn't wait for promises
+        for (let i = 0; list.length > i; i++) {
+            const total = await calculateTotalPRs(list[i], options.total);
+            arr.push({ repo: list[i], pulls: total });
+        }
+
+        const total = findTotal(arr);
+        const msgBox = boxen(total.toString(), boxenOptions);
+
+        console.log(msgBox);
+    }
+    run();
 }
 if (options.name) {
     // console.log('...writing to file...');
     async function displayResults() {
-        const pullRequests = await saveListOfPRs(options.name);
+        const data = await fetchRepos(options.name);
+        const list = compileRepoNames(data);
+        const pullRequests = await saveListOfPRs(list, options.name);
 
         console.log(pullRequests);
-        return pullRequests;
+        // return pullRequests;
     }
     displayResults();
 }
