@@ -1,14 +1,10 @@
-require('dotenv').config();
-const { request } = require('@octokit/request');
-const token = process.env.TOKEN;
-
 /**
  * Compile an array of repository names for an organization
  *
  * @param {Array} data Array of objects
  * @returns
  */
-function fetchRepoNames(data) {
+function compileRepoNames(data) {
     if (!Array.isArray(data)) {
         throw new Error('data should be an array');
     }
@@ -23,4 +19,4 @@ function fetchRepoNames(data) {
     return names;
 }
 
-module.exports = fetchRepoNames;
+module.exports = compileRepoNames;

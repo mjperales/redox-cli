@@ -4,7 +4,7 @@ const fs = require('fs');
 const boxen = require('boxen');
 const yargs = require('yargs');
 const findTotal = require('./findTotal');
-const fetchRepoNames = require('./fetchRepoNames');
+const compileRepoNames = require('./compileRepoNames');
 const calculateTotalPRs = require('./calculateTotalPRs');
 const fetchPRsWith100PerPage = require('./fetchPRsWith100PerPage');
 const fetchRepos = require('./fetchRepos');
@@ -41,7 +41,7 @@ async function calculateTotalNumberPRs(orgName) {
     try {
         const data = await fetchRepos(orgName);
         // console.log(data);
-        const list = fetchRepoNames(data);
+        const list = compileRepoNames(data);
         const arr = [];
 
         // We loop through our repos
@@ -71,7 +71,7 @@ async function calculateTotalNumberPRs(orgName) {
 async function saveListOfPRs(orgName) {
     try {
         const data = await fetchRepos(orgName);
-        const list = fetchRepoNames(data);
+        const list = compileRepoNames(data);
         let prs = [];
 
         // iterate through repo names and push to array
