@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { request } = require('@octokit/request');
 const token = process.env.TOKEN;
-const getLastPagePulls = require('./getLastPagePulls');
+const getAPagePulls = require('./getAPagePulls');
 const fetchPrsCall = require('./fetchPRsCall');
 
 /**
@@ -16,7 +16,7 @@ async function calculateTotalPRs(repo, orgName) {
 
     // if link doesn't exist then we only have 1 page!
     if (link === null) {
-        const onlyOnePagePulls = await getLastPagePulls(1, repo, orgName);
+        const onlyOnePagePulls = await getAPagePulls(1, repo, orgName);
         return onlyOnePagePulls;
     }
 
@@ -30,11 +30,7 @@ async function calculateTotalPRs(repo, orgName) {
     const lastPageNum = parseInt(lastPage, 10);
 
     const pullsFromPrevPages = (lastPageNum - 1) * 30;
-    const pullsFromLastPage = await getLastPagePulls(
-        lastPageNum,
-        repo,
-        orgName
-    );
+    const pullsFromLastPage = await getAPagePulls(lastPageNum, repo, orgName);
 
     return pullsFromPrevPages + pullsFromLastPage;
 }

@@ -3,14 +3,14 @@ const { request } = require('@octokit/request');
 const token = process.env.TOKEN;
 
 /**
- * Let's find the amount of pulls for the last page
+ * Fetch PRs for a certain page number
  *
  * @param {Number} pageNum Last page number
  * @param {String} repo repository name
  * @param {String} owner Organization owner name
  * @returns
  */
-async function getLastPagePulls(pageNum, repo, owner) {
+async function getAPagePulls(pageNum, repo, owner) {
     try {
         const rsp = await request(
             `GET /repos/{owner}/{repo}/pulls?page=${pageNum}`,
@@ -34,4 +34,4 @@ async function getLastPagePulls(pageNum, repo, owner) {
     }
 }
 
-module.exports = getLastPagePulls;
+module.exports = getAPagePulls;
