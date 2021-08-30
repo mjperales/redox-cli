@@ -1,6 +1,5 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
-// const calculateTotalPRs = require('../bin/calculateTotalPRs');
 
 describe('calculateTotalPRs() tests', function () {
     it('returns total of 2 (current PRs)', async function () {

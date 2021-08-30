@@ -1,6 +1,3 @@
-require('dotenv').config();
-const { request } = require('@octokit/request');
-const token = process.env.TOKEN;
 const getAPagePulls = require('./getAPagePulls');
 const fetchPrsCall = require('./fetchPRsCall');
 
