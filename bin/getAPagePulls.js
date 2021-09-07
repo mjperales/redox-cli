@@ -1,5 +1,6 @@
 require('dotenv').config();
-const { request } = require('@octokit/request');
+const axios = require('axios').default;
+const checkStatus = require('./Utilities/HttpResponse');
 const token = process.env.TOKEN;
 
 /**
@@ -12,26 +13,19 @@ const token = process.env.TOKEN;
  */
 async function getAPagePulls(pageNum, repo, owner) {
     try {
-        const rsp = await request(
-            `GET /repos/{owner}/{repo}/pulls?page=${pageNum}`,
+        const rsp = await axios.get(
+            `https://api.github.com/repos/${owner}/${repo}/pulls?page=${pageNum}`,
             {
                 headers: {
-                    authorization: `token ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
-                owner: owner,
-                repo: repo,
             }
         );
 
         return rsp.data.length;
     } catch (err) {
-        if (err.status === 404) {
-            return err.message;
-        }
-
-        console.log(err);
-        return err;
+        checkStatus(err);
     }
 }
 
-module.exports = getAPagePulls;
+module.exports = { getAPagePulls };

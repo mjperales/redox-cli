@@ -1,5 +1,6 @@
 require('dotenv').config();
-const { request } = require('@octokit/request');
+const axios = require('axios').default;
+const checkStatus = require('./Utilities/HttpResponse');
 const token = process.env.TOKEN;
 
 /**
@@ -11,26 +12,20 @@ const token = process.env.TOKEN;
  */
 async function fetchPRsWith100PerPage(orgName, repo, page = null) {
     try {
-        let path = 'GET /repos/{owner}/{repo}/pulls?per_page=100';
+        let path = `https://api.github.com/repos/${orgName}/${repo}/pulls?per_page=100`;
 
-        if (page !== null) {
-            path = `GET /repos/{owner}/{repo}/pulls?per_page=100&page=${page}`;
+        if (path !== null) {
+            path = `https://api.github.com/repos/${orgName}/${repo}/pulls?per_page=100${page}`;
         }
-
-        const rsp = await request(path, {
+        const rsp = await axios.get(path, {
             headers: {
-                authorization: `token ${token}`,
+                Authorization: `Bearer ${token}`,
             },
-            owner: orgName,
-            repo: repo,
         });
 
         return rsp;
     } catch (err) {
-        if (err.status === 404) {
-            return err.message;
-        }
-        return err;
+        checkStatus(err);
     }
 }
 

@@ -1,5 +1,6 @@
 require('dotenv').config();
-const { request } = require('@octokit/request');
+const axios = require('axios').default;
+const checkStatus = require('./Utilities/HttpResponse');
 const token = process.env.TOKEN;
 
 /**
@@ -10,22 +11,19 @@ const token = process.env.TOKEN;
  */
 async function fetchRepos(orgName) {
     try {
-        const rsp = await request('GET /orgs/{org}/repos', {
-            headers: {
-                authorization: `token ${token}`,
-            },
-            org: `${orgName.toLowerCase()}`,
-        });
+        const rsp = await axios.get(
+            `https://api.github.com/orgs/${orgName}/repos`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
 
         const { data } = rsp;
         return data;
     } catch (err) {
-        if (err.status === 404) {
-            return err.message;
-        }
-
-        console.log(err);
-        return err;
+        checkStatus(err);
     }
 }
 

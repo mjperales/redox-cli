@@ -1,5 +1,6 @@
 require('dotenv').config();
-const { request } = require('@octokit/request');
+const axios = require('axios').default;
+const checkStatus = require('./Utilities/HttpResponse');
 const token = process.env.TOKEN;
 
 /**
@@ -12,13 +13,14 @@ const token = process.env.TOKEN;
  */
 async function fetchPrsCall(repo, orgName) {
     try {
-        const rsp = await request('GET /repos/{owner}/{repo}/pulls', {
-            headers: {
-                authorization: `token ${token}`,
-            },
-            owner: orgName,
-            repo: repo,
-        });
+        const rsp = await axios.get(
+            `https://api.github.com/repos/${orgName}/${repo}/pulls`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
 
         const { link } = rsp.headers;
 
@@ -28,12 +30,8 @@ async function fetchPrsCall(repo, orgName) {
 
         return link;
     } catch (err) {
-        if (err.status === 404) {
-            return err.message;
-        }
-
-        return err;
+        checkStatus(err);
     }
 }
 
-module.exports = fetchPrsCall;
+module.exports = { fetchPrsCall };
