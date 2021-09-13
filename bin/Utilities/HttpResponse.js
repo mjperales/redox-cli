@@ -1,8 +1,9 @@
 const checkStatus = (err) => {
     if (err.status === 404) {
-        console.log(err.message);
+        return err.message;
     }
-    console.log(err);
+
+    return err;
 };
 
 module.exports = checkStatus;
