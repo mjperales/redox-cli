@@ -66,11 +66,9 @@ if (options.total) {
                     lastPage
                 );
 
-                const total = fetchLastPage.data.length;
-
                 arr.push({
                     repo: list[i],
-                    pulls: prevPagesPRs + total,
+                    pulls: prevPagesPRs + fetchLastPage.data.length,
                 });
             }
         }
