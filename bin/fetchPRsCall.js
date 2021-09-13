@@ -9,12 +9,23 @@ const token = process.env.TOKEN;
  *
  * @param {String} repo  Repository name
  * @param {String} orgName Organization name
+ * @param {Number} perPage Total pull requests in a page (defaults to 30)
  * @returns
  */
-async function fetchPrsCall(repo, orgName) {
+async function fetchPrsCall(repo, orgName, pageNum = null, perPage = null) {
     try {
+        let pagenumber = '';
+        if (pageNum !== null) {
+            pagenumber = `?page=${pageNum}`;
+        }
+
+        let perpage = '';
+        if (perPage !== null) {
+            perpage = `?per_page=${perPage}`;
+        }
+
         const rsp = await axios.get(
-            `https://api.github.com/repos/${orgName}/${repo}/pulls`,
+            `https://api.github.com/repos/${orgName}/${repo}/pulls${perpage}${pagenumber}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -22,13 +33,7 @@ async function fetchPrsCall(repo, orgName) {
             }
         );
 
-        const { link } = rsp.headers;
-
-        if (link === undefined) {
-            return null;
-        }
-
-        return link;
+        return rsp;
     } catch (err) {
         checkStatus(err);
     }

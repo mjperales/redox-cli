@@ -1,7 +1,6 @@
 const sinon = require('sinon');
 const chai = require('chai');
 const expect = chai.expect;
-const should = chai.should();
 const response = require('./fixtures/github-data.json');
 const onePage = require('./fixtures/github-data-onepage.json');
 
