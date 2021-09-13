@@ -9,7 +9,7 @@ const token = process.env.TOKEN;
  *
  * @param {String} repo  Repository name
  * @param {String} orgName Organization name
- * @param {Number} perPage Total pull requests in a page (defaults to 30)
+ * @param {Number} pageNum Page number to fetch PRs
  * @returns
  */
 async function fetchPrsCall(repo, orgName, pageNum = null) {
