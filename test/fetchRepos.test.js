@@ -1,5 +1,4 @@
 const sinon = require('sinon');
-const assert = require('assert');
 const chai = require('chai');
 const expect = chai.expect;
 const response = require('./fixtures/github-data.json');
