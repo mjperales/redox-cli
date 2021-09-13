@@ -112,7 +112,7 @@ if (options.name) {
         }
 
         console.log(prs);
-        // return pullRequests;
+        // return prs;
     }
     displayResults();
 }
