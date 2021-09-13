@@ -23,7 +23,7 @@ async function fetchRepos(orgName) {
         const { data } = rsp;
         return data;
     } catch (err) {
-        checkStatus(err);
+        return checkStatus(err);
     }
 }
 

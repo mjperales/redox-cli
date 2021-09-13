@@ -30,7 +30,7 @@ async function fetchPrsCall(repo, orgName, pageNum = null) {
 
         return rsp;
     } catch (err) {
-        checkStatus(err);
+        return checkStatus(err);
     }
 }
 
